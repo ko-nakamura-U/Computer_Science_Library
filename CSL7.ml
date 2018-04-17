@@ -385,6 +385,22 @@ let test1 = romaji_to_kanji "" global_ekimei_list = ""
 let test2 = romaji_to_kanji "myogadani" global_ekimei_list = "茗荷谷";;
 
 
+(* 10.11 *)
+(* 目的：２つの駅名と駅間リストを受け取ったら、駅間リストの中から2駅間の距離を返す *)
+(* get_ekikan_list : string string list -> float *)
+let rec get_ekikan_list s1 s2 l = match l with
+  | [] -> infinity
+    | {kiten=ki; shuten=shu; keiyu=ke; kyori=ky; jikan=ji} :: rest ->
+          if (s1 = ki && s2 = shu) || (s2 = ki && s1 = shu) then ky
+                                                            else get_ekikan_list s1 s2 rest;;
+
+(* テスト *)
+let test1 = get_ekikan_list "" "" [] = infinity
+let test3 = get_ekikan_list "新大塚" "茗荷谷" global_ekikan_list = 1.2
+let test2 = get_ekikan_list "茗荷谷" "新大塚" global_ekikan_list = 1.2
+let test4 = get_ekikan_list "営団成増" "和光市" global_ekikan_list = 2.1;;
+
+
 
 (* 11.1 *)
 (* 目的：0から受け取った自然数までの2乗の和を求める *)
