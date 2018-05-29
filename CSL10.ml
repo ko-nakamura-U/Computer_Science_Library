@@ -137,3 +137,42 @@ let count (l: gakusei_t list) (s: string) =
 let test_14_6_1 = count [gakusei_t1] "A" = 1
 let test_14_6_2 = count [gakusei_t1; gakusei_t2] "A" = 1
 let test_14_6_3 = count [gakusei_t1; gakusei_t1; gakusei_t2] "A" = 2;;
+
+
+
+(* 14.8 *)
+(* 目的：整数を受け取ったら、その2乗から1を引いた数を返す *)
+fun i -> (i * i) - 1;;
+
+(* 14.9 *)
+(* 各人（名前, 身長, 体重, 誕生日, 血液型）を表す型 *)
+type person_t = {
+  name : string;       (*名前*)
+  m : float;          (*身長*)
+  kg : float;         (*体重*)
+  birthday : string;  (*誕生日*)
+  blood : string;     (*血液型*)
+};;
+
+(* 目的：person_t型のデータを受け取ったら、その名前のフィールドを返す *)
+fun (pt: person_t) -> match pt with
+  {name=n; m=m; kg=kg; birthday=bd; blood=b} -> n;;
+
+
+
+(* 14.10 *)
+
+(* 14.1 *)
+let even (l: int list) = List.filter (fun n -> n mod 2 = 0) l;;
+
+(* 14.2 *)
+let count_A (l: gakusei_t list) =
+  List.length (List.filter (fun (gt: gakusei_t) -> match gt with {name=n; tensuu=t; seiseki=s} -> s = "A") l);;
+
+(* 14.3 *)
+let concat (l: string list) = List.fold_right (fun s1 s2 -> s1^s2) l "";;
+
+(* 14.4 *)
+let gakusei_sum (l: gakusei_t list) =
+  List.fold_right (fun (g1: gakusei_t) n ->
+    match g1 with {name = n1; tensuu = t1; seiseki = s1} -> t1 + n) l 0;;
