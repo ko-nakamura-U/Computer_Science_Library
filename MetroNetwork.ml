@@ -706,6 +706,25 @@ let test_14_13_3 = koushin { namae = "代々木公園"; saitan_kyori = 2.1; tema
 
 
 
+(* 15.4 *)
+(* 目的：
+eki_t list型のリストを受け取ったら、
+最短距離最小の駅 と 最短距離最小の駅以外からなるリスト の組を返す
+
+ポイント：パターンマッチして出た最小の数を fold_right の初期値として扱う
+*)
+(* saitan_wo_bunri : eki_t list -> eki_t1 * eki_t1 list *)
+let saitan_wo_bunri (l: eki_t list) = match l with
+    [] -> ({namae = ""; saitan_kyori = infinity; temae_list = []}, [])
+  | first :: rest -> List.fold_right (fun s (p, v) ->
+    match s with { namae = sn; saitan_kyori = ss; temae_list = st} ->
+    match p with { namae = pn; saitan_kyori = ps; temae_list = pt} ->
+      if ss < ps then (s, p::v) else (p, s::v))
+      rest
+      (first, []);;
+
+
+
 (* 16.3 *)
 (* 目的：
 直前に確定した駅p(eki_t型)と未確定の駅のリストv(eki_t list型)を受け取ったら、
