@@ -737,15 +737,47 @@ let koushin (p: eki_t) (v: eki_t list) (e: ekikan_t list) =
     let total = get_ekikan_kyori pn qn e +. ps in
       if total < qs then {namae = qn; saitan_kyori = total; temae_list = qn :: pt} else q1) p) v;;
 
-(* 16.13 tests *)
-let test_16_13_1 = koushin { namae = "代々木上原"; saitan_kyori = infinity; temae_list = [] } [] global_ekikan_list = []
-let test_16_13_2 = koushin { namae = "代々木上原"; saitan_kyori = infinity; temae_list = [] } [
+(* 16.3 tests *)
+let test_16_3_1 = koushin { namae = "代々木上原"; saitan_kyori = infinity; temae_list = [] } [] global_ekikan_list = []
+let test_16_3_2 = koushin { namae = "代々木上原"; saitan_kyori = infinity; temae_list = [] } [
     { namae = "明治神宮前"; saitan_kyori = infinity; temae_list = [] }
 ] global_ekikan_list = [
     { namae = "明治神宮前"; saitan_kyori = infinity; temae_list = [] }
 ]
-let test_16_13_3 = koushin { namae = "代々木公園"; saitan_kyori = 2.1; temae_list = ["代々木公園"; "明治神宮前"; "表参道"]} [
+let test_16_3_3 = koushin { namae = "代々木公園"; saitan_kyori = 2.1; temae_list = ["代々木公園"; "明治神宮前"; "表参道"]} [
     { namae = "代々木上原"; saitan_kyori = infinity; temae_list = [] }
 ] global_ekikan_list = [
     { namae = "代々木上原"; saitan_kyori = 3.1; temae_list = ["代々木上原"; "代々木公園"; "明治神宮前"; "表参道"] }
 ];;
+
+
+
+(* 16.4 *)
+(* 目的：
+eki_t list型の未確定の駅リストと ekikan_t list型の駅間のリストを受け取ったら、
+ダイクストラのアルゴリズムにしたがって各駅について最短距離と最短経路が正しく入った
+eki_t list型のリストを返す
+*)
+(* dijkstra_main : eki_t list -> ekikan_t list -> eki_t list *)
+let rec dijkstra_main (v: eki_t list) (e: ekikan_t list) = match v with
+    [] -> []
+  | first :: rest ->
+      let (saitan, nokori) = saitan_wo_bunri (first :: rest) in
+      let (v2: eki_t list) = koushin saitan nokori e in
+      saitan :: dijkstra_main v2 e
+
+(* 16.4 tests *)
+let test_data_16_4 = [
+  {namae="池袋"; saitan_kyori = infinity; temae_list = []};
+  {namae="新大塚"; saitan_kyori = 1.2; temae_list = ["新大塚"; "茗荷谷"]};
+  {namae="茗荷谷"; saitan_kyori = 0.; temae_list = ["茗荷谷"]};
+  {namae="後楽園"; saitan_kyori = infinity; temae_list = []}
+]
+
+let test_16_4_1 = dijkstra_main [] global_ekikan_list = []
+let test_16_4_2 = dijkstra_main test_data_16_4 global_ekikan_list = [
+  {namae = "茗荷谷"; saitan_kyori = 0.; temae_list = ["茗荷谷"]};
+  {namae = "新大塚"; saitan_kyori = 1.2; temae_list = ["新大塚"; "茗荷谷"]};
+  {namae = "後楽園"; saitan_kyori = 1.8; temae_list = ["後楽園"; "茗荷谷"]};
+  {namae = "池袋"; saitan_kyori = 3.; temae_list = ["池袋"; "新大塚"; "茗荷谷"]}
+]
