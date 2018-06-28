@@ -781,3 +781,32 @@ let test_16_4_2 = dijkstra_main test_data_16_4 global_ekikan_list = [
   {namae = "後楽園"; saitan_kyori = 1.8; temae_list = ["後楽園"; "茗荷谷"]};
   {namae = "池袋"; saitan_kyori = 3.; temae_list = ["池袋"; "新大塚"; "茗荷谷"]}
 ]
+
+
+
+(* 16.5 *)
+(* 目的：
+始点と終点の駅名(ローマ字の文字列)を受け取ったら、
+（seiretsu を使って global_ekimei_list の重複を取り除き、
+ romaji_to_kanji を使って始点と終点の漢字表記を求め、
+ make_initial_eki_list を使って駅のリスト (eki_t list 型) を作り、
+ dijkstra_main を使って各駅までの最短路を確定し、
+ その中から）終点の駅のレコード (eki_t 型) を返す
+*)
+(* dijkstra : string -> string -> eki_t *)
+let dijkstra romaji_kiten romaji_shuten =
+  let seiretsuzumi_ekimei_list = seiretsu global_ekimei_list in
+  let kanji_kiten = romaji_to_kanji romaji_kiten seiretsuzumi_ekimei_list in
+  let kanji_shuten = romaji_to_kanji romaji_shuten seiretsuzumi_ekimei_list in
+  let initialized_eki_list = make_initial_eki_list seiretsuzumi_ekimei_list kanji_kiten in
+  let eki_list = dijkstra_main initialized_eki_list global_ekikan_list in
+  (* 目的：eki_t list型のリストから終点のレコード(eki_t)を返す *)
+  (* get_shuten : string -> eki_t list -> eki_t *)
+  let rec get_shuten (e: string) (l: eki_t list) = match l with
+      [] -> {namae = ""; saitan_kyori = infinity; temae_list = []}
+    | ({namae = n; saitan_kyori = s; temae_list = t} as first) :: rest ->
+        if n = e then first
+                 else get_shuten e rest in
+    get_shuten kanji_shuten eki_list;;
+
+let test_16_5_1 = dijkstra "ikebukuro" "meguro";;
